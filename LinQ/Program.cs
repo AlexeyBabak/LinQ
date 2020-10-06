@@ -13,7 +13,13 @@ namespace OOPExamples
 
             //1) Сделать выборку всех Пользователей, имя + фамилия которых длиннее чем 12 символов.
 
+            var usersWithLengthMore12 = users
+                .Where(x => x.FirstName.Length + x.LastName.Length > 12);
+
             //2) Сделать выборку всех транзакций (в результате должен получится список из 1000 транзакций)
+
+            var transactionsAll = banks
+               .SelectMany(x => x.Transactions);
 
             //3) Вывести Банк: и всех его пользователей (Имя + фамилия + количество транзакий в гривне) отсортированных по Фамилии по убиванию. в таком виде :
             //   Имя банка 
@@ -21,13 +27,32 @@ namespace OOPExamples
             //   Игорь Сердюк 
             //   Николай Басков
 
+            foreach (var bankAndUsers in banks)
+                Console.WriteLine(users
+                    .OrderByDescending(x => x.LastName)
+                    .Aggregate($"{bankAndUsers.Name}\n***********************", (x, y) =>
+                {
+                    return x + "\n" + y.FirstName + " " + y.LastName + " " + y.Transactions.Count(z => z.Currency == Currency.UAH);
+                }));
+
             //4) Сделать выборку всех Пользователей типа Admin, у которых счет в банке, в котором больше всего транзакций
+
+            var mostTransactionsBank = banks
+                .OrderBy(x => x.Transactions.ToList().Count)
+                .ThenBy(x => x.Name)
+                .FirstOrDefault();
+
+            var admins = users
+                .Where(x => x.Type == UserType.Admin)
+                .Where(x => x.Bank == mostTransactionsBank);
 
             //5) Найти Пользователей(НЕ АДМИНОВ), которые произвели больше всего транзакций в определенной из валют (UAH,USD,EUR) 
             //то есть найти трёх пользователей: 1й который произвел больше всего транзакций в гривне, второй пользователь, который произвел больше всего транзакций в USD 
             //и третьего в EUR
 
             //6) Сделать выборку транзакций банка, у которого больше всего Pemium пользователей
+
+            Console.ReadKey();
 
         }
 
@@ -53,7 +78,7 @@ namespace OOPExamples
             var result = new List<Transaction>();
             var sign = random.Next(0, 1);
             var signValue = sign == 0 ? -1 : 1;
-            for(var i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 result.Add(new Transaction
                 {
@@ -110,7 +135,7 @@ namespace OOPExamples
             {
                 result.Add(new Bank
                 {
-                    Id = i+1,
+                    Id = i + 1,
                     Name = RandomString(random.Next(NAME_MIN_LENGTH, NAME_MAX_LENGTH)),
                     Transactions = new List<Transaction>()
                 });
@@ -125,7 +150,7 @@ namespace OOPExamples
             int bankId = 0;
             Bank bank = null;
             List<Transaction> transactions = null;
-            for(int i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
                 bankId = random.Next(0, banks.Count);
                 bank = banks[bankId];
@@ -134,7 +159,7 @@ namespace OOPExamples
                 {
                     Bank = bank,
                     FirstName = RandomString(random.Next(NAME_MIN_LENGTH, NAME_MAX_LENGTH)),
-                    Id = i+1,
+                    Id = i + 1,
                     LastName = RandomString(random.Next(NAME_MIN_LENGTH, NAME_MAX_LENGTH)),
                     Type = GetRandomUserType(),
                     Transactions = transactions
