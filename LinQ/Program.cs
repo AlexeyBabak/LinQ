@@ -30,9 +30,9 @@ namespace OOPExamples
             foreach (var bankAndUsers in banks)
                 Console.WriteLine(users
                     .OrderByDescending(x => x.LastName)
-                    .Aggregate($"{bankAndUsers.Name}\n***********************", (x, y) =>
+                    .Aggregate($"Bank: {bankAndUsers.Name}\n***********************", (x, y) =>
                 {
-                    return x + "\n" + y.FirstName + " " + y.LastName + " " + y.Transactions.Count(z => z.Currency == Currency.UAH);
+                    return x + "\nName: " + y.FirstName + " " + y.LastName + " " + y.Transactions.Count(z => z.Currency == Currency.UAH);
                 }));
 
             //4) Сделать выборку всех Пользователей типа Admin, у которых счет в банке, в котором больше всего транзакций
@@ -50,7 +50,27 @@ namespace OOPExamples
             //то есть найти трёх пользователей: 1й который произвел больше всего транзакций в гривне, второй пользователь, который произвел больше всего транзакций в USD 
             //и третьего в EUR
 
+            var userMaxUAH = users
+                .Where(x => x.Type != UserType.Admin)
+                .FirstOrDefault(x => x.Transactions.Where(y => y.Currency == Currency.UAH).ToList().Count == users.Max(z => z.Transactions.Where(y => y.Currency == Currency.UAH).ToList().Count));
+
+            var userMaxUSD = users
+                .Where(x => x.Type != UserType.Admin)
+                .FirstOrDefault(x => x.Transactions.Where(y => y.Currency == Currency.USD).ToList().Count == users.Max(z => z.Transactions.Where(y => y.Currency == Currency.USD).ToList().Count));
+
+            var userMaxEUR = users
+                .Where(x => x.Type != UserType.Admin)
+                .FirstOrDefault(x => x.Transactions.Where(y => y.Currency == Currency.EUR).ToList().Count == users.Max(z => z.Transactions.Where(y => y.Currency == Currency.EUR).ToList().Count));
+
             //6) Сделать выборку транзакций банка, у которого больше всего Pemium пользователей
+
+            var transactionsForPemium = users
+                .Where(x => x.Type == UserType.Pemium)
+                .GroupBy(y => y.Bank)
+                .OrderBy(x => x.Count())
+                .FirstOrDefault()
+                .SelectMany(x => x.Transactions)
+                .ToList();
 
             Console.ReadKey();
 
