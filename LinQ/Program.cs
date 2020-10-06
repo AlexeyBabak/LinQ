@@ -27,13 +27,17 @@ namespace OOPExamples
             //   Игорь Сердюк 
             //   Николай Басков
 
-            foreach (var bankAndUsers in banks)
-                Console.WriteLine(users
-                    .OrderByDescending(x => x.LastName)
-                    .Aggregate($"Bank: {bankAndUsers.Name}\n***********************", (x, y) =>
+            var groupedByBankUsers = users.GroupBy(x => x.Bank);
+
+            foreach (var group in groupedByBankUsers)
+            {
+                Console.WriteLine($"Bank: {group.Key.Name}");
+                Console.WriteLine("*************");
+                foreach (var user in group.OrderByDescending(x => x.LastName))
                 {
-                    return x + "\nName: " + y.FirstName + " " + y.LastName + " " + y.Transactions.Count(z => z.Currency == Currency.UAH);
-                }));
+                    Console.WriteLine($"{user.FirstName} {user.LastName} {user.Transactions.Count(y => y.Currency == Currency.UAH)}");
+                }
+            }
 
             //4) Сделать выборку всех Пользователей типа Admin, у которых счет в банке, в котором больше всего транзакций
 
