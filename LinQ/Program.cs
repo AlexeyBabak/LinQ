@@ -56,15 +56,18 @@ namespace OOPExamples
 
             var userMaxUAH = users
                 .Where(x => x.Type != UserType.Admin)
-                .FirstOrDefault(x => x.Transactions.Where(y => y.Currency == Currency.UAH).ToList().Count == users.Max(z => z.Transactions.Where(y => y.Currency == Currency.UAH).ToList().Count));
+                .OrderByDescending(x => x.Transactions.Count(y => y.Currency == Currency.UAH))
+                .FirstOrDefault();
 
             var userMaxUSD = users
                 .Where(x => x.Type != UserType.Admin)
-                .FirstOrDefault(x => x.Transactions.Where(y => y.Currency == Currency.USD).ToList().Count == users.Max(z => z.Transactions.Where(y => y.Currency == Currency.USD).ToList().Count));
+                .OrderByDescending(x => x.Transactions.Count(y => y.Currency == Currency.USD))
+                .FirstOrDefault();
 
             var userMaxEUR = users
                 .Where(x => x.Type != UserType.Admin)
-                .FirstOrDefault(x => x.Transactions.Where(y => y.Currency == Currency.EUR).ToList().Count == users.Max(z => z.Transactions.Where(y => y.Currency == Currency.EUR).ToList().Count));
+                .OrderByDescending(x => x.Transactions.Count(y => y.Currency == Currency.EUR))
+                .FirstOrDefault();
 
             //6) Сделать выборку транзакций банка, у которого больше всего Pemium пользователей
 
